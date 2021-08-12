@@ -179,9 +179,11 @@ final class ChatRoomViewController: UIViewController {
 
     private func bindWithViewModel() {
         chatRoomViewModel.bind { [weak self] in
-            guard let self = self else { return }
-            self.messagesTableView.insertRows(at: [self.lastIndexPath], with: .none)
-            self.scrollToLastMessage()
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.messagesTableView.insertRows(at: [self.lastIndexPath], with: .none)
+                self.scrollToLastMessage()
+            }
         }
     }
 }
@@ -231,7 +233,7 @@ extension ChatRoomViewController: UITableViewDataSource {
 
 extension ChatRoomViewController: MessageInputBarViewDelegate {
 
-    func sendButtonTapped(message: String) {
+    func didTapSendButton(message: String) {
         chatRoomViewModel.send(message: message)
     }
 }

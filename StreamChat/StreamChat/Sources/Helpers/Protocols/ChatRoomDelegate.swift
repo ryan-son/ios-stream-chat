@@ -7,5 +7,5 @@
 
 protocol ChatRoomDelegate: AnyObject {
 
-    func received(message: Message)
+    func didReceiveMessage(_ message: Message)
 }

@@ -7,5 +7,5 @@
 
 protocol MessageInputBarViewDelegate: AnyObject {
 
-    func sendButtonTapped(message: String)
+    func didTapSendButton(message: String)
 }

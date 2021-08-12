@@ -122,7 +122,7 @@ final class MessageInputBarView: UIView {
         guard let delegate = delegate,
               let message = inputTextView.text,
               !message.isEmpty else { return }
-        delegate.sendButtonTapped(message: message)
+        delegate.didTapSendButton(message: message)
         inputTextView.text = ""
     }
 }

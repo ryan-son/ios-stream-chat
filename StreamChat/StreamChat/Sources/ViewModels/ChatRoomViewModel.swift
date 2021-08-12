@@ -61,7 +61,7 @@ final class ChatRoomViewModel {
 
 extension ChatRoomViewModel: ChatRoomDelegate {
 
-    func received(message: Message) {
+    func didReceiveMessage(_ message: Message) {
         messages.append(message)
     }
 }

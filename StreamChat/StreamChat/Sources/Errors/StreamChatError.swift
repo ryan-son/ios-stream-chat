@@ -9,11 +9,10 @@ enum StreamChatError: Error {
 
     // MARK: ChatRoom Socket Network
 
-    case failedToConvertStringToStreamData(location: String)
-    case failedToWriteOnStream
-    case errorOccurredAtStream
-    case streamDataReadingFailed(error: Error)
-    case failedToConvertByteToString
+    case failedToConvertStringToData(location: String)
+    case failedToWriteOnStream(error: Error)
+    case failedToReadFromStream(error: Error)
+    case failedToConvertDataToString
 
     // MARK: UI
 
@@ -33,16 +32,14 @@ extension StreamChatError: CustomStringConvertible {
 
     var description: String {
         switch self {
-        case .failedToConvertStringToStreamData(let location):
+        case .failedToConvertStringToData(let location):
             return "문자열을 스트림 데이터로 변환하지 못했습니다. Location: \(location)"
-        case .failedToWriteOnStream:
-            return "Output Stream: write 작업에 실패하였습니다."
-        case .errorOccurredAtStream:
-            return "스트림에서 에러가 발생했어요. case: errorOccurred"
-        case .streamDataReadingFailed(let error):
+        case .failedToWriteOnStream(let error):
+            return "Output stream에 쓰기 작업이 실패하였습니다. Error: \(error)"
+        case .failedToReadFromStream(let error):
             return "Input stream을 읽어들이던 중에 문제가 발생했습니다. Error: \(error)"
-        case .failedToConvertByteToString:
-            return "바이트를 문자열로 변환하지 못해 메시지를 만들지 못했습니다."
+        case .failedToConvertDataToString:
+            return "데이터를 문자열로 변환하지 못해 메시지를 만들지 못했습니다."
         case .messageNotFound:
             return "해당 index에는 메시지가 없습니다."
         case .cellTypecastingFailed(let type):

@@ -9,13 +9,20 @@ import Foundation
 
 final class ChatRoom: NSObject {
 
+    // MARK: Namespaces
+
     private enum ConnectionSetting {
 
         // MARK: TCP Connection information
 
-        static let host = NetworkConnection.host
-        static let port = NetworkConnection.port
-        static let maxReadLength = 2400
+        static let host: String = NetworkConnection.host
+        static let port: Int = NetworkConnection.port
+
+        static let minReadLength: Int = 1
+        static let maxReadLength: Int = 2400
+
+        static let readTimeout: TimeInterval = .zero
+        static let writeTimeout: TimeInterval = 3
     }
 
     private enum DefaultUser {
@@ -24,26 +31,32 @@ final class ChatRoom: NSObject {
         static let unknown = User(name: "Unknown", senderType: .me)
     }
 
-    private var inputStream: InputStream?
-    private var outputStream: OutputStream?
-    private let system: User = DefaultUser.system
-    private(set) var user: User = DefaultUser.unknown
+    // MARK: Properties
+
+    lazy var session: URLSession = {
+        let configuration = URLSessionConfiguration.default
+        configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
+        configuration.waitsForConnectivity = true
+        return URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
+    }()
+
+    private var streamTask: URLSessionStreamTask?
+    private var user: User = DefaultUser.unknown
     weak var delegate: ChatRoomDelegate?
 
+    // MARK: Chat room features
+
     func connect() {
-        Stream.getStreamsToHost(withName: ConnectionSetting.host,
-                                port: ConnectionSetting.port,
-                                inputStream: &inputStream,
-                                outputStream: &outputStream)
-        inputStream?.delegate = self
-        scheduleStreamsToRunLoop()
-        openStreams()
+        let streamTask = session.streamTask(withHostName: ConnectionSetting.host, port: ConnectionSetting.port)
+        streamTask.resume()
+        read(from: streamTask)
+        self.streamTask = streamTask
     }
 
     func join(with username: String) {
         user = User(name: username, senderType: .me)
         guard let joiningStreamData: Data = username.asJoiningStreamData else {
-            Log.logic.error("\(StreamChatError.failedToConvertStringToStreamData(location: #function))")
+            Log.logic.error("\(StreamChatError.failedToConvertStringToData(location: #function))")
             return
         }
         write(joiningStreamData)
@@ -51,7 +64,7 @@ final class ChatRoom: NSObject {
 
     func send(message: String) {
         guard let sendingStreamData: Data = message.asSendingStreamData else {
-            Log.logic.error("\(StreamChatError.failedToConvertStringToStreamData(location: #function))")
+            Log.logic.error("\(StreamChatError.failedToConvertStringToData(location: #function))")
             return
         }
         write(sendingStreamData)
@@ -59,98 +72,70 @@ final class ChatRoom: NSObject {
 
     func leave() {
         guard let leavingStreamData: Data = String.leavingStreamData else {
-            Log.logic.error("\(StreamChatError.failedToConvertStringToStreamData(location: #function))")
+            Log.logic.error("\(StreamChatError.failedToConvertStringToData(location: #function))")
             return
         }
         write(leavingStreamData)
     }
 
     func disconnect() {
-        inputStream?.close()
-        outputStream?.close()
+        session.finishTasksAndInvalidate()
     }
 
     // MARK: Private Methods
 
-    private func scheduleStreamsToRunLoop() {
-        inputStream?.schedule(in: .current, forMode: .common)
-        outputStream?.schedule(in: .current, forMode: .common)
-    }
+    private func read(from stream: URLSessionStreamTask) {
+        stream.readData(ofMinLength: ConnectionSetting.minReadLength,
+                        maxLength: ConnectionSetting.maxReadLength,
+                        timeout: ConnectionSetting.readTimeout) { [weak self] data, _, error in
+            defer { self?.read(from: stream) }
+            guard let self = self,
+                  let data = data else { return }
 
-    private func openStreams() {
-        inputStream?.open()
-        outputStream?.open()
-    }
-
-    private func write(_ streamData: Data) {
-        streamData.withUnsafeBytes { rawBufferPointer in
-            guard let pointer = rawBufferPointer.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
-                Log.network.error("\(StreamChatError.failedToWriteOnStream)")
-                return
-            }
-            outputStream?.write(pointer, maxLength: streamData.count)
-        }
-    }
-}
-
-// MARK: - StreamDelegate
-
-extension ChatRoom: StreamDelegate {
-
-    func stream(_ aStream: Stream, handle eventCode: Stream.Event) {
-        switch eventCode {
-        case .openCompleted:
-            Log.flowCheck.debug("연결 성공!")
-        case .hasBytesAvailable:
-            readAvailableBytes(from: aStream)
-        case .endEncountered:
-            leave()
-            disconnect()
-        case .errorOccurred:
-            Log.network.notice("\(StreamChatError.errorOccurredAtStream)")
-        case .hasSpaceAvailable:
-            Log.network.info("더 사용할 수 있는 버퍼가 있어요. case: hasSpaceAvailable")
-        default:
-            Log.network.notice("\(StreamChatError.unknown(location: #function))")
-        }
-    }
-
-    // MARK: Private Methods
-
-    private func readAvailableBytes(from stream: Stream) {
-        guard let stream = stream as? InputStream else { return }
-        let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: ConnectionSetting.maxReadLength)
-
-        while stream.hasBytesAvailable {
-            guard let bytesRead = inputStream?.read(buffer, maxLength: ConnectionSetting.maxReadLength) else { return }
-
-            if let error = stream.streamError, bytesRead < 0 {
-                Log.network.error("\(StreamChatError.streamDataReadingFailed(error: error))")
-                break
+            if let error = error {
+                Log.network.error("\(StreamChatError.failedToReadFromStream(error: error))")
             }
 
-            if let message = constructMessage(with: buffer, length: bytesRead) {
-                delegate?.received(message: message)
+            if let message = self.constructMessage(with: data) {
+                self.delegate?.didReceiveMessage(message)
             }
         }
     }
 
-    private func constructMessage(with buffer: UnsafeMutablePointer<UInt8>, length: Int) -> Message? {
-        guard let strings = String(bytesNoCopy: buffer, length: length, encoding: .utf8, freeWhenDone: true)?
-                .components(separatedBy: String.StreamAffix.Infix.receive),
+    private func constructMessage(with data: Data) -> Message? {
+        guard let strings = String(data: data,
+                                   encoding: .utf8)?.components(separatedBy: String.StreamAffix.Infix.receive),
               let name = strings.first,
               let message = strings.last else {
-            Log.logic.error("\(StreamChatError.failedToConvertByteToString)")
+            Log.logic.error("\(StreamChatError.failedToConvertDataToString)")
             return nil
         }
 
         let isSystemMessage: Bool = strings.count <= 1
 
         if isSystemMessage {
-            return Message(sender: system, text: message, dateTime: Date())
+            return Message(sender: DefaultUser.system, text: message, dateTime: Date())
         } else {
             let sender: User = (name == user.name) ? user : User(name: name, senderType: .someoneElse)
             return Message(sender: sender, text: message, dateTime: Date())
         }
+    }
+
+    private func write(_ streamData: Data) {
+        streamTask?.write(streamData, timeout: ConnectionSetting.writeTimeout) { error in
+            if let error = error {
+                Log.network.error("\(StreamChatError.failedToWriteOnStream(error: error))")
+            }
+        }
+    }
+}
+
+// MARK: - URLSessionStreamDelegate
+
+extension ChatRoom: URLSessionStreamDelegate {
+
+    func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
+        streamTask?.closeRead()
+        streamTask?.closeWrite()
     }
 }
