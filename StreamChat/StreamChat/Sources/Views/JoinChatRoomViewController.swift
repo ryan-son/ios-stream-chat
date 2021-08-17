@@ -19,7 +19,7 @@ final class JoinChatRoomViewController: UIViewController {
 
         enum ContentStackView {
             static let spacingAtPortraitOrientation: CGFloat = 80
-            static let spacingAtLandscapeOrientation: CGFloat = 30
+            static let spacingAtLandscapeOrientation: CGFloat = 20
         }
 
         enum WelcomeLabel {
@@ -32,6 +32,10 @@ final class JoinChatRoomViewController: UIViewController {
             static let borderWidth: CGFloat = 1
             static let font: UIFont.TextStyle = .title3
             static let backgroundColor: UIColor = .systemGray6
+        }
+
+        enum UsernameTextCountLabel {
+            static let maxLength: Int = 10
         }
 
         enum JoinButton {
@@ -78,6 +82,15 @@ final class JoinChatRoomViewController: UIViewController {
         return label
     }()
 
+    private let usernameContentStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.distribution = .equalSpacing
+        stackView.spacing = 5
+        return stackView
+    }()
+
     private let usernameTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = Style.UsernameTextField.placeholderText
@@ -87,6 +100,15 @@ final class JoinChatRoomViewController: UIViewController {
         textField.borderStyle = .roundedRect
         textField.autocorrectionType = .no
         return textField
+    }()
+
+    private let usernameTextCountLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.preferredFont(forTextStyle: .callout)
+        label.textColor = .systemGray2
+        label.textAlignment = .left
+        label.text = "0/\(Style.UsernameTextCountLabel.maxLength)"
+        return label
     }()
 
     private let joinButton: UIButton = {
@@ -139,8 +161,10 @@ final class JoinChatRoomViewController: UIViewController {
     }
 
     private func setUpSubviews() {
+        usernameContentStackView.addArrangedSubview(usernameTextField)
+        usernameContentStackView.addArrangedSubview(usernameTextCountLabel)
         contentStackView.addArrangedSubview(welcomeLabel)
-        contentStackView.addArrangedSubview(usernameTextField)
+        contentStackView.addArrangedSubview(usernameContentStackView)
         contentStackView.addArrangedSubview(joinButton)
         view.addSubview(contentStackView)
     }
@@ -248,6 +272,16 @@ final class JoinChatRoomViewController: UIViewController {
         usernameRequiredAlert.addAction(okAction)
         present(usernameRequiredAlert, animated: true)
     }
+
+    private func showMaxLengthExceededAlert() {
+        let alert = UIAlertController(title: "최대 글자수 초과",
+                                      message: "10 자를 초과할 수 없어요.",
+                                      preferredStyle: .alert)
+        present(alert, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+            alert.dismiss(animated: true)
+        }
+    }
 }
 
 // MARK: - UITextFieldDelegate
@@ -264,5 +298,17 @@ extension JoinChatRoomViewController: UITextFieldDelegate {
         chatRoomViewController.join(with: username)
         navigationController?.pushViewController(chatRoomViewController, animated: true)
         return true
+    }
+
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let text = textField.text else { return true }
+        let length = text.count + string.count - range.length
+        let isWithinMaxLength = length <= Style.UsernameTextCountLabel.maxLength
+        if isWithinMaxLength {
+            usernameTextCountLabel.text = "\(length)/\(Style.UsernameTextCountLabel.maxLength)"
+        } else {
+            showMaxLengthExceededAlert()
+        }
+        return isWithinMaxLength
     }
 }
