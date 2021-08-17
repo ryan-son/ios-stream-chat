@@ -182,6 +182,7 @@ final class JoinChatRoomViewController: UIViewController {
         guard let userInfo = notification.userInfo,
               let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else { return }
         centerYConstraint?.constant = .zero
+
         UIView.animate(withDuration: duration) { [weak self] in
             self?.view.layoutIfNeeded()
         }
@@ -231,7 +232,7 @@ final class JoinChatRoomViewController: UIViewController {
             showUsernameRequiredAlert()
             return
         }
-        chatRoomViewController.join(with: username)
+//        chatRoomViewController.join(with: username)
         navigationController?.pushViewController(chatRoomViewController, animated: true)
     }
 

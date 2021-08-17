@@ -13,7 +13,7 @@ final class MessageInputBarView: UIView {
 
     private enum Style {
 
-        static let backgroundColor: UIColor = .systemGray5
+        static let backgroundColor: UIColor = .systemGray6
 
         enum ContentStackView {
             static let spacing: CGFloat = 8
@@ -26,10 +26,16 @@ final class MessageInputBarView: UIView {
             static let maxHeight: CGFloat = 100
         }
 
+        enum InputTextCountLabel {
+            static let font: UIFont.TextStyle = .caption2
+            static let textColor: UIColor = .systemGray
+            static let maxCount: Int = 300
+        }
+
         enum SendButton {
-            static let frameSize = CGSize(width: 20, height: 20)
-            private static let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 20,
-                                                                                 weight: .light,
+            static let frameSize = CGRect(x: .zero, y: .zero, width: 20, height: 20)
+            private static let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 17,
+                                                                                 weight: .heavy,
                                                                                  scale: .large)
             static let image = UIImage(
                 systemName: "paperplane.fill",
@@ -75,14 +81,32 @@ final class MessageInputBarView: UIView {
         textView.adjustsFontForContentSizeCategory = true
         textView.layer.cornerRadius = Style.InputTextView.cornerRadius
         textView.isScrollEnabled = false
+        textView.textContainer.heightTracksTextView = true
         textView.autocorrectionType = .no
         textView.translatesAutoresizingMaskIntoConstraints = false
         return textView
     }()
 
+    private let rightComponentStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.distribution = .fillProportionally
+        return stackView
+    }()
+
+    private let inputTextCountLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.preferredFont(forTextStyle: .caption2)
+        label.textColor = .systemGray
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.5
+        label.isHidden = true
+        return label
+    }()
+
     private let sendButton: UIButton = {
-        let button = UIButton()
-        button.frame.size = Style.SendButton.frameSize
+        let button = UIButton(frame: Style.SendButton.frameSize)
         button.setImage(Style.SendButton.image, for: .normal)
         button.contentEdgeInsets = Style.SendButton.contentEdgeInset
         button.backgroundColor = Style.SendButton.backgroundColor
@@ -112,8 +136,10 @@ final class MessageInputBarView: UIView {
     // MARK: Set up views
 
     private func setUpSubviews() {
+        rightComponentStackView.addArrangedSubview(inputTextCountLabel)
+        rightComponentStackView.addArrangedSubview(sendButton)
         contentStackView.addArrangedSubview(inputTextView)
-        contentStackView.addArrangedSubview(sendButton)
+        contentStackView.addArrangedSubview(rightComponentStackView)
         addSubview(contentStackView)
     }
 
@@ -153,5 +179,19 @@ extension MessageInputBarView: UITextViewDelegate {
 
     func textViewDidChange(_ textView: UITextView) {
         isOversized = textView.contentSize.height > Style.InputTextView.maxHeight
+        inputTextCountLabel.text = "\(String(textView.text.count))/\(Style.InputTextCountLabel.maxCount)"
+        let numberOfLines: CGFloat
+        numberOfLines = textView.intrinsicContentSize.height > 0
+            ? textView.intrinsicContentSize.height / textView.font!.lineHeight
+            : textView.contentSize.height
+        inputTextCountLabel.isHidden = numberOfLines < 2
+    }
+
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let isExceededMaxLength: Bool = textView.text.count + (text.count - range.length) > Style.InputTextCountLabel.maxCount
+        if isExceededMaxLength {
+            delegate?.showMaxBodyLengthExceededAlert()
+        }
+        return !isExceededMaxLength
     }
 }

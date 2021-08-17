@@ -153,7 +153,7 @@ final class ChatRoomViewController: UIViewController {
         let contentInset: UIEdgeInsets = .zero
         messagesTableView.contentInset = contentInset
         messagesTableView.scrollIndicatorInsets = contentInset
-        bottomConstraint?.constant = -Style.Constraint.contentStackViewBottom
+        bottomConstraint?.constant = .zero
 
         guard let userInfo = notification.userInfo,
               let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else { return }
@@ -250,5 +250,15 @@ extension ChatRoomViewController: MessageInputBarViewDelegate {
 
     func didTapSendButton(message: String) {
         chatRoomViewModel?.send(message: message)
+    }
+
+    func showMaxBodyLengthExceededAlert() {
+        let alert = UIAlertController(title: "최대 글자수 초과",
+                                      message: "300자를 초과할 수 없어요.",
+                                      preferredStyle: .alert)
+        present(alert, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+            alert.dismiss(animated: true)
+        }
     }
 }
