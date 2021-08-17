@@ -171,6 +171,10 @@ final class MessageInputBarView: UIView {
         guard let delegate = delegate,
               let message = inputTextView.text,
               !message.isEmpty else { return }
+        guard !message.contains(StreamData.Infix.receive) else {
+            delegate.showForbiddenStringContainedAlert()
+            return
+        }
         delegate.didTapSendButton(message: message)
         inputTextView.text = ""
     }
