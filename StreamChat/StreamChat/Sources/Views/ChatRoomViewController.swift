@@ -251,9 +251,9 @@ extension ChatRoomViewController: MessageInputBarViewDelegate {
         chatRoomViewModel?.send(message: message)
     }
 
-    func showMaxBodyLengthExceededAlert() {
+    func showMaxLengthExceededAlert() {
         let alert = UIAlertController(title: "최대 글자수 초과",
-                                      message: "300자를 초과할 수 없어요.",
+                                      message: "300 자를 초과할 수 없어요.",
                                       preferredStyle: .alert)
         present(alert, animated: true)
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {

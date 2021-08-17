@@ -4,13 +4,11 @@
 //
 //  Created by Ryan-Son on 2021/08/11.
 //
-
 import UIKit
 
 final class JoinChatRoomViewController: UIViewController {
 
     // MARK: Namespaces
-
     private enum Style {
 
         enum NavigationBar {
@@ -67,11 +65,9 @@ final class JoinChatRoomViewController: UIViewController {
     }
 
     // MARK: Properties
-
     private var centerYConstraint: NSLayoutConstraint?
 
     // MARK: Views
-
     private let contentStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -134,7 +130,6 @@ final class JoinChatRoomViewController: UIViewController {
     }()
 
     // MARK: Lifecycle
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setDelegates()
@@ -157,7 +152,6 @@ final class JoinChatRoomViewController: UIViewController {
     }
 
     // MARK: Set up views
-
     private func setDelegates() {
         usernameTextField.delegate = self
     }
@@ -189,7 +183,6 @@ final class JoinChatRoomViewController: UIViewController {
     }
 
     // MARK: Handling keyboard notifications
-
     private func addKeyboardNotificationObservers() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(keyboardWillShow(_:)),
@@ -228,7 +221,6 @@ final class JoinChatRoomViewController: UIViewController {
     }
 
     // MARK: Dismiss keyboard by tapping
-
     private func addKeyboardDismissGestureRecognizer() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tap)
@@ -244,7 +236,6 @@ final class JoinChatRoomViewController: UIViewController {
     }
 
     // MARK: Change layout the size classes
-
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.horizontalSizeClass == .compact {
@@ -255,7 +246,6 @@ final class JoinChatRoomViewController: UIViewController {
     }
 
     // MARK: Join chat room
-
     @objc private func joinButtonTapped() {
         let chatRoomSocket = ChatRoomSocket()
         let chatRoomViewModel = ChatRoomViewModel(chatRoomSocket: chatRoomSocket)
@@ -275,7 +265,6 @@ final class JoinChatRoomViewController: UIViewController {
     }
 
     // MARK: Alerts
-
     private func showUsernameRequiredAlert() {
         let usernameRequiredAlert = UIAlertController(title: Style.Alert.UsernameRequiredTitle,
                                                       message: nil,
@@ -310,7 +299,6 @@ final class JoinChatRoomViewController: UIViewController {
 }
 
 // MARK: - UITextFieldDelegate
-
 extension JoinChatRoomViewController: UITextFieldDelegate {
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
