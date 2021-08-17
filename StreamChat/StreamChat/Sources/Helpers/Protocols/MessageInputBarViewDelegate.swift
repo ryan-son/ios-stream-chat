@@ -9,4 +9,5 @@ protocol MessageInputBarViewDelegate: AnyObject {
 
     func didTapSendButton(message: String)
     func showMaxLengthExceededAlert()
+    func showForbiddenStringContainedAlert()
 }

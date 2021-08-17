@@ -256,7 +256,11 @@ final class JoinChatRoomViewController: UIViewController {
             showUsernameRequiredAlert()
             return
         }
-//        chatRoomViewController.join(with: username)
+        guard !username.contains(StreamData.Infix.receive) else {
+            showForbiddenStringContainedAlert()
+            return
+        }
+        chatRoomViewController.join(with: username)
         navigationController?.pushViewController(chatRoomViewController, animated: true)
     }
 
@@ -282,6 +286,17 @@ final class JoinChatRoomViewController: UIViewController {
             alert.dismiss(animated: true)
         }
     }
+
+    private func showForbiddenStringContainedAlert() {
+        let forbiddenStringContainedAlert = UIAlertController(title: "제한된 문자 포함",
+                                                      message: "입력할 수 없는 문자열이 포함되어 있습니다.",
+                                                      preferredStyle: .alert)
+        let okAction = UIAlertAction(title: Style.Alert.okActionTitle, style: .default) { [self] _ in
+            usernameTextField.becomeFirstResponder()
+        }
+        forbiddenStringContainedAlert.addAction(okAction)
+        present(forbiddenStringContainedAlert, animated: true)
+    }
 }
 
 // MARK: - UITextFieldDelegate
@@ -293,6 +308,10 @@ extension JoinChatRoomViewController: UITextFieldDelegate {
         guard let username = textField.text,
               !username.isEmpty else {
             showUsernameRequiredAlert()
+            return false
+        }
+        guard !username.contains(StreamData.Infix.receive) else {
+            showForbiddenStringContainedAlert()
             return false
         }
         chatRoomViewController.join(with: username)

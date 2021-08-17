@@ -261,4 +261,13 @@ extension ChatRoomViewController: MessageInputBarViewDelegate {
             alert.dismiss(animated: true)
         }
     }
+
+    func showForbiddenStringContainedAlert() {
+        let forbiddenStringContainedAlert = UIAlertController(title: "제한된 문자 포함",
+                                                      message: "입력할 수 없는 문자열이 포함되어 있습니다.",
+                                                      preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "확인", style: .default)
+        forbiddenStringContainedAlert.addAction(okAction)
+        present(forbiddenStringContainedAlert, animated: true)
+    }
 }

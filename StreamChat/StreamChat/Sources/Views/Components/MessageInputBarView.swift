@@ -170,6 +170,10 @@ final class MessageInputBarView: UIView {
         guard let delegate = delegate,
               let message = inputTextView.text,
               !message.isEmpty else { return }
+        guard !message.contains(StreamData.Infix.receive) else {
+            delegate.showForbiddenStringContainedAlert(from: inputTextView)
+            return
+        }
         delegate.didTapSendButton(message: message)
         inputTextView.text = ""
     }
@@ -179,21 +183,20 @@ extension MessageInputBarView: UITextViewDelegate {
 
     func textViewDidChange(_ textView: UITextView) {
         isOversized = textView.contentSize.height > Style.InputTextView.maxHeight
-        
     }
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        let isWithinMaxLength: Bool = textView.text.count + (text.count - range.length) > Style.InputTextCountLabel.maxCount
+        let isWithinMaxLength: Bool = textView.text.count + (text.count - range.length) <= Style.InputTextCountLabel.maxCount
 
         if isWithinMaxLength {
-            delegate?.showMaxLengthExceededAlert()
-        } else {
             inputTextCountLabel.text = "\(String(textView.text.count))/\(Style.InputTextCountLabel.maxCount)"
             let numberOfLines: CGFloat
             numberOfLines = textView.intrinsicContentSize.height > 0
                 ? textView.intrinsicContentSize.height / textView.font!.lineHeight
                 : textView.contentSize.height
             inputTextCountLabel.isHidden = numberOfLines < 2
+        } else {
+            delegate?.showMaxLengthExceededAlert()
         }
         return isWithinMaxLength
     }
