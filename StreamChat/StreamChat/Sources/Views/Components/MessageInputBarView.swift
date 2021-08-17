@@ -22,6 +22,8 @@ final class MessageInputBarView: UIView {
         enum InputTextView {
             static let font: UIFont.TextStyle = .title3
             static let cornerRadius: CGFloat = 10
+            static let minHeight: CGFloat = 44
+            static let maxHeight: CGFloat = 100
         }
 
         enum SendButton {
@@ -47,6 +49,13 @@ final class MessageInputBarView: UIView {
     // MARK: Properties
 
     weak var delegate: MessageInputBarViewDelegate?
+    private var textViewHeightConstraint: NSLayoutConstraint?
+    private var isOversized = false {
+        didSet {
+            guard oldValue != isOversized else { return }
+            adjustInputTextViewConstraint()
+        }
+    }
 
     // MARK: Views
 
@@ -63,9 +72,11 @@ final class MessageInputBarView: UIView {
     private let inputTextView: UITextView = {
         let textView = UITextView()
         textView.font = UIFont.preferredFont(forTextStyle: Style.InputTextView.font)
+        textView.adjustsFontForContentSizeCategory = true
         textView.layer.cornerRadius = Style.InputTextView.cornerRadius
         textView.isScrollEnabled = false
         textView.autocorrectionType = .no
+        textView.translatesAutoresizingMaskIntoConstraints = false
         return textView
     }()
 
@@ -88,6 +99,7 @@ final class MessageInputBarView: UIView {
 
     init() {
         super.init(frame: .zero)
+        inputTextView.delegate = self
         translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = Style.backgroundColor
         setUpSubviews()
@@ -115,6 +127,16 @@ final class MessageInputBarView: UIView {
             contentStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor,
                                                   constant: Style.Constraint.top)
         ])
+        textViewHeightConstraint = inputTextView.heightAnchor.constraint(
+            greaterThanOrEqualToConstant: Style.InputTextView.minHeight
+        )
+        textViewHeightConstraint?.constant = Style.InputTextView.maxHeight
+    }
+
+    private func adjustInputTextViewConstraint() {
+        inputTextView.isScrollEnabled = isOversized
+        textViewHeightConstraint?.isActive = isOversized
+        inputTextView.setNeedsUpdateConstraints()
     }
 
     // MARK: Button actions
@@ -125,5 +147,12 @@ final class MessageInputBarView: UIView {
               !message.isEmpty else { return }
         delegate.didTapSendButton(message: message)
         inputTextView.text = ""
+    }
+}
+
+extension MessageInputBarView: UITextViewDelegate {
+
+    func textViewDidChange(_ textView: UITextView) {
+        isOversized = textView.contentSize.height > Style.InputTextView.maxHeight
     }
 }
