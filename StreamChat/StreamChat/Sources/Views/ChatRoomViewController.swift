@@ -107,13 +107,17 @@ final class ChatRoomViewController: UIViewController {
     private func setUpConstraints() {
         NSLayoutConstraint.activate([
             messagesInputBarView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            messagesInputBarView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            messagesInputBarView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            messagesInputBarView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
 
-        bottomConstraint = messagesInputBarView.contentStackView.bottomAnchor.constraint(
-            equalTo: view.safeAreaLayoutGuide.bottomAnchor
-        )
+        let FixedOrGreaterThanViewBottomConstraint =
+            messagesInputBarView.bottomAnchor.constraint(greaterThanOrEqualTo: view.bottomAnchor)
+        FixedOrGreaterThanViewBottomConstraint.priority = .defaultHigh
+        let ViewBottomFixedConstraint = messagesInputBarView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ViewBottomFixedConstraint.priority = .required
+
+        bottomConstraint = ViewBottomFixedConstraint
+        FixedOrGreaterThanViewBottomConstraint.isActive = true
         bottomConstraint?.isActive = true
 
         NSLayoutConstraint.activate([
@@ -146,7 +150,7 @@ final class ChatRoomViewController: UIViewController {
     @objc private func keyboardWillShow(_ notification: Notification) {
         guard let userInfo = notification.userInfo,
               let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
-        bottomConstraint?.constant = -keyboardFrame.height + Style.Constraint.contentStackViewBottomWhenKeyboardShown
+        bottomConstraint?.constant = -keyboardFrame.height
 
         guard let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else { return }
         UIView.animate(withDuration: duration) {
