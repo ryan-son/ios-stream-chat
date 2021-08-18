@@ -23,13 +23,15 @@ final class MessageInputBarView: UIView {
             static let font: UIFont.TextStyle = .title3
             static let cornerRadius: CGFloat = 10
             static let minHeight: CGFloat = 44
-            static let maxHeight: CGFloat = 100
+            static let maxHeight: CGFloat = 120
         }
 
         enum InputTextCountLabel {
             static let font: UIFont.TextStyle = .caption2
             static let textColor: UIColor = .systemGray
+            static let minimumScaleFactor: CGFloat = 0.5
             static let maxCount: Int = 300
+            static let numberOfLinesToShowLabel: Int = 2
         }
 
         enum SendButton {
@@ -43,6 +45,7 @@ final class MessageInputBarView: UIView {
             )?.withTintColor(.white, renderingMode: .alwaysOriginal)
             static let contentEdgeInset = UIEdgeInsets(top: 3, left: 8, bottom: 3, right: 8)
             static let backgroundColor: UIColor = .systemGreen
+            static let cornerRadius: CGFloat = 20
         }
 
         enum Constraint {
@@ -81,7 +84,6 @@ final class MessageInputBarView: UIView {
         textView.adjustsFontForContentSizeCategory = true
         textView.layer.cornerRadius = Style.InputTextView.cornerRadius
         textView.isScrollEnabled = false
-        textView.textContainer.heightTracksTextView = true
         textView.autocorrectionType = .no
         textView.translatesAutoresizingMaskIntoConstraints = false
         return textView
@@ -98,10 +100,11 @@ final class MessageInputBarView: UIView {
 
     private let inputTextCountLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.preferredFont(forTextStyle: .caption2)
-        label.textColor = .systemGray
+        label.font = UIFont.preferredFont(forTextStyle: Style.InputTextCountLabel.font)
+        label.textColor = Style.InputTextCountLabel.textColor
+        label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
-        label.minimumScaleFactor = 0.5
+        label.minimumScaleFactor = Style.InputTextCountLabel.minimumScaleFactor
         label.isHidden = true
         return label
     }()
@@ -113,7 +116,7 @@ final class MessageInputBarView: UIView {
         button.backgroundColor = Style.SendButton.backgroundColor
         button.contentMode = .scaleAspectFit
         button.adjustsImageWhenHighlighted = false
-        button.layer.cornerRadius = button.frame.height / 2
+        button.layer.cornerRadius = Style.SendButton.cornerRadius
         button.addTarget(self, action: #selector(sendButtonTapped), for: .touchUpInside)
         button.setContentHuggingPriority(.required, for: .horizontal)
         return button
@@ -163,6 +166,7 @@ final class MessageInputBarView: UIView {
         inputTextView.isScrollEnabled = isOversized
         textViewHeightConstraint?.isActive = isOversized
         inputTextView.setNeedsUpdateConstraints()
+        setNeedsUpdateConstraints()
     }
 
     // MARK: Button actions
@@ -184,21 +188,30 @@ extension MessageInputBarView: UITextViewDelegate {
 
     func textViewDidChange(_ textView: UITextView) {
         isOversized = textView.contentSize.height > Style.InputTextView.maxHeight
+
+        setInputTextCountLabel(to: textView.text.count)
+        showInputTextCountLabel(with: textView, whenExceeds: Style.InputTextCountLabel.numberOfLinesToShowLabel)
     }
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         let isWithinMaxLength: Bool = textView.text.count + (text.count - range.length) <= Style.InputTextCountLabel.maxCount + 1
 
-        if isWithinMaxLength {
-            inputTextCountLabel.text = "\(String(textView.text.count))/\(Style.InputTextCountLabel.maxCount)"
-            let numberOfLines: CGFloat
-            numberOfLines = textView.intrinsicContentSize.height > 0
-                ? textView.intrinsicContentSize.height / textView.font!.lineHeight
-                : textView.contentSize.height
-            inputTextCountLabel.isHidden = numberOfLines < 2
-        } else {
+        if !isWithinMaxLength {
             delegate?.showMaxLengthExceededAlert()
         }
         return isWithinMaxLength
+    }
+
+    private func setInputTextCountLabel(to count: Int) {
+        inputTextCountLabel.text = "\(String(count))/\(Style.InputTextCountLabel.maxCount)"
+    }
+
+    private func showInputTextCountLabel(with textView: UITextView, whenExceeds numberOfLines: Int) {
+        guard let fontHeight = textView.font?.lineHeight else { return }
+        let numberOfLines: CGFloat
+        numberOfLines = textView.intrinsicContentSize.height > .zero
+            ? textView.intrinsicContentSize.height / fontHeight
+            : textView.contentSize.height
+        inputTextCountLabel.isHidden = numberOfLines < numberOfLines
     }
 }
