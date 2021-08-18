@@ -27,6 +27,10 @@ final class JoinChatRoomViewController: UIViewController {
             static let font: UIFont.TextStyle = .largeTitle
         }
 
+        enum UsernameContentStackView {
+            static let spacing: CGFloat = 5
+        }
+
         enum UsernameTextField {
             static let placeholderText: String = "Please enter your name..."
             static let borderWidth: CGFloat = 1
@@ -36,6 +40,7 @@ final class JoinChatRoomViewController: UIViewController {
 
         enum UsernameTextCountLabel {
             static let maxLength: Int = 10
+            static let initialText: String = "0/\(Style.UsernameTextCountLabel.maxLength)"
         }
 
         enum JoinButton {
@@ -53,6 +58,11 @@ final class JoinChatRoomViewController: UIViewController {
         enum Alert {
             static let UsernameRequiredTitle: String = "이름을 입력해주세요"
             static let okActionTitle: String = "확인"
+            static let maxLengthExceededTitle: String = "최대 글자수 초과"
+            static let maxLengthExceededMessage: String = "10 자를 초과할 수 없어요."
+            static let timeToDismissMaxLengthExceededAlert: TimeInterval = 0.3
+            static let forbiddenStringContainedTitle: String = "제한된 문자 포함"
+            static let forbiddenStringContainedMessage: String = "입력할 수 없는 문자열이 포함되어 있습니다."
         }
     }
 
@@ -87,7 +97,7 @@ final class JoinChatRoomViewController: UIViewController {
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.distribution = .equalSpacing
-        stackView.spacing = 5
+        stackView.spacing = Style.UsernameContentStackView.spacing
         return stackView
     }()
 
@@ -107,7 +117,7 @@ final class JoinChatRoomViewController: UIViewController {
         label.font = UIFont.preferredFont(forTextStyle: .callout)
         label.textColor = .systemGray2
         label.textAlignment = .left
-        label.text = "0/\(Style.UsernameTextCountLabel.maxLength)"
+        label.text = Style.UsernameTextCountLabel.initialText
         return label
     }()
 
@@ -278,19 +288,19 @@ final class JoinChatRoomViewController: UIViewController {
     }
 
     private func showMaxLengthExceededAlert() {
-        let alert = UIAlertController(title: "최대 글자수 초과",
-                                      message: "10 자를 초과할 수 없어요.",
+        let alert = UIAlertController(title: Style.Alert.maxLengthExceededTitle,
+                                      message: Style.Alert.maxLengthExceededMessage,
                                       preferredStyle: .alert)
         present(alert, animated: true)
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Style.Alert.timeToDismissMaxLengthExceededAlert) {
             alert.dismiss(animated: true)
         }
     }
 
     private func showForbiddenStringContainedAlert() {
-        let forbiddenStringContainedAlert = UIAlertController(title: "제한된 문자 포함",
-                                                      message: "입력할 수 없는 문자열이 포함되어 있습니다.",
-                                                      preferredStyle: .alert)
+        let forbiddenStringContainedAlert = UIAlertController(title: Style.Alert.forbiddenStringContainedTitle,
+                                                              message: Style.Alert.forbiddenStringContainedMessage,
+                                                              preferredStyle: .alert)
         let okAction = UIAlertAction(title: Style.Alert.okActionTitle, style: .default) { [self] _ in
             usernameTextField.becomeFirstResponder()
         }
