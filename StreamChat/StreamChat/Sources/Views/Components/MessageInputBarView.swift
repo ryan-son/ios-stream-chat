@@ -20,10 +20,10 @@ final class MessageInputBarView: UIView {
         }
 
         enum InputTextView {
-            static let font: UIFont.TextStyle = .title3
+            static let font: UIFont.TextStyle = .callout
             static let cornerRadius: CGFloat = 10
             static let minHeight: CGFloat = 44
-            static let maxHeight: CGFloat = 120
+            static let maxHeight: CGFloat = 132
         }
 
         enum InputTextCountLabel {
@@ -31,19 +31,19 @@ final class MessageInputBarView: UIView {
             static let textColor: UIColor = .systemGray
             static let minimumScaleFactor: CGFloat = 0.5
             static let maxCount: Int = 300
-            static let numberOfLinesToShowLabel: Int = 2
+            static let numberOfLinesToShowLabel: CGFloat = 2
         }
 
         enum SendButton {
             static let frameSize = CGRect(x: .zero, y: .zero, width: 20, height: 20)
-            private static let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 17,
+            private static let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 15,
                                                                                  weight: .heavy,
                                                                                  scale: .large)
             static let image = UIImage(
                 systemName: "paperplane.fill",
                 withConfiguration: Style.SendButton.symbolConfiguration
             )?.withTintColor(.white, renderingMode: .alwaysOriginal)
-            static let contentEdgeInset = UIEdgeInsets(top: 3, left: 8, bottom: 3, right: 8)
+            static let contentEdgeInset = UIEdgeInsets(top: .zero, left: 8, bottom: .zero, right: 8)
             static let backgroundColor: UIColor = .systemGreen
             static let cornerRadius: CGFloat = 20
         }
@@ -52,6 +52,7 @@ final class MessageInputBarView: UIView {
             static let leading: CGFloat = 15
             static let trailing: CGFloat = -15
             static let top: CGFloat = 8
+            static let bottom: CGFloat = -8
         }
     }
 
@@ -85,6 +86,7 @@ final class MessageInputBarView: UIView {
         textView.layer.cornerRadius = Style.InputTextView.cornerRadius
         textView.isScrollEnabled = false
         textView.autocorrectionType = .no
+        textView.setContentCompressionResistancePriority(.required, for: .vertical)
         textView.translatesAutoresizingMaskIntoConstraints = false
         return textView
     }()
@@ -153,19 +155,18 @@ final class MessageInputBarView: UIView {
             contentStackView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor,
                                                        constant: Style.Constraint.trailing),
             contentStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor,
-                                                  constant: Style.Constraint.top)
+                                                  constant: Style.Constraint.top),
+            contentStackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor,
+                                                     constant: -Style.Constraint.top)
         ])
-        textViewHeightConstraint = inputTextView.heightAnchor.constraint(
-            greaterThanOrEqualToConstant: Style.InputTextView.minHeight
-        )
-        textViewHeightConstraint?.constant = Style.InputTextView.maxHeight
+        textViewHeightConstraint = inputTextView.heightAnchor.constraint(equalToConstant: Style.InputTextView.maxHeight)
     }
 
     private func adjustInputTextViewConstraint() {
         inputTextView.isScrollEnabled = isOversized
         textViewHeightConstraint?.isActive = isOversized
         inputTextView.setNeedsUpdateConstraints()
-        setNeedsUpdateConstraints()
+        inputTextView.layoutIfNeeded()
     }
 
     // MARK: Button actions
@@ -205,12 +206,12 @@ extension MessageInputBarView: UITextViewDelegate {
         inputTextCountLabel.text = "\(String(count))/\(Style.InputTextCountLabel.maxCount)"
     }
 
-    private func showInputTextCountLabel(with textView: UITextView, whenExceeds numberOfLines: Int) {
+    private func showInputTextCountLabel(with textView: UITextView, whenExceeds numberOfLines: CGFloat) {
         guard let fontHeight = textView.font?.lineHeight else { return }
-        let numberOfLines: CGFloat
-        numberOfLines = textView.intrinsicContentSize.height > .zero
+        let calculatedNumberOfLines: CGFloat
+        calculatedNumberOfLines = textView.intrinsicContentSize.height > .zero
             ? textView.intrinsicContentSize.height / fontHeight
-            : textView.contentSize.height
-        inputTextCountLabel.isHidden = numberOfLines < numberOfLines
+            : textView.contentSize.height / fontHeight
+        inputTextCountLabel.isHidden = calculatedNumberOfLines < numberOfLines
     }
 }
