@@ -21,7 +21,6 @@ final class ChatRoomViewController: UIViewController {
         }
 
         enum Constraint {
-            static let contentStackViewBottom: CGFloat = -10
             static let contentStackViewBottomWhenKeyboardShown: CGFloat = 27
         }
     }
@@ -105,8 +104,7 @@ final class ChatRoomViewController: UIViewController {
         ])
 
         bottomConstraint = messagesInputBarView.contentStackView.bottomAnchor.constraint(
-            equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-            constant: Style.Constraint.contentStackViewBottom
+            equalTo: view.safeAreaLayoutGuide.bottomAnchor
         )
         bottomConstraint?.isActive = true
 
@@ -144,6 +142,7 @@ final class ChatRoomViewController: UIViewController {
 
         guard let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else { return }
         UIView.animate(withDuration: duration) {
+            self.messagesInputBarView.sendButton.isHidden = false
             self.view.layoutIfNeeded()
             self.scrollToLastMessage()
         }
@@ -153,11 +152,12 @@ final class ChatRoomViewController: UIViewController {
         let contentInset: UIEdgeInsets = .zero
         messagesTableView.contentInset = contentInset
         messagesTableView.scrollIndicatorInsets = contentInset
-        bottomConstraint?.constant = -Style.Constraint.contentStackViewBottom
+        bottomConstraint?.constant = .zero
 
         guard let userInfo = notification.userInfo,
               let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else { return }
         UIView.animate(withDuration: duration) {
+            self.messagesInputBarView.sendButton.isHidden = true
             self.view.layoutIfNeeded()
         }
     }

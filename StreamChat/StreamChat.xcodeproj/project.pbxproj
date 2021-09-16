@@ -10,7 +10,6 @@
 		AA6098E626C98FB6006C8D40 /* StreamData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6098E526C98FB6006C8D40 /* StreamData.swift */; };
 		AAA0D8CC26C243BA00127B3F /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = AAA0D8CB26C243BA00127B3F /* .swiftlint.yml */; };
 		AAA0D8D426C25A0100127B3F /* ChatRoomSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA0D8D326C25A0100127B3F /* ChatRoomSocket.swift */; };
-		AAA0D8D726C25C2900127B3F /* NetworkConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA0D8D626C25C2900127B3F /* NetworkConnection.swift */; };
 		AAA0D8DC26C2917300127B3F /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA0D8DB26C2917300127B3F /* Message.swift */; };
 		AAA0D8DE26C2922300127B3F /* SenderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA0D8DD26C2922300127B3F /* SenderType.swift */; };
 		AAA0D8E026C2976700127B3F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA0D8DF26C2976700127B3F /* User.swift */; };
@@ -36,7 +35,6 @@
 		AA6098E526C98FB6006C8D40 /* StreamData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamData.swift; sourceTree = "<group>"; };
 		AAA0D8CB26C243BA00127B3F /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		AAA0D8D326C25A0100127B3F /* ChatRoomSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoomSocket.swift; sourceTree = "<group>"; };
-		AAA0D8D626C25C2900127B3F /* NetworkConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkConnection.swift; sourceTree = "<group>"; };
 		AAA0D8DB26C2917300127B3F /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		AAA0D8DD26C2922300127B3F /* SenderType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SenderType.swift; sourceTree = "<group>"; };
 		AAA0D8DF26C2976700127B3F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -88,7 +86,6 @@
 		AAA0D8CE26C244ED00127B3F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				AAA0D8D526C25BF800127B3F /* Settings */,
 				C792755D262C562E00EF5D3A /* Assets.xcassets */,
 				C792755F262C562E00EF5D3A /* LaunchScreen.storyboard */,
 			);
@@ -128,14 +125,6 @@
 				AAA0D8D326C25A0100127B3F /* ChatRoomSocket.swift */,
 			);
 			path = Services;
-			sourceTree = "<group>";
-		};
-		AAA0D8D526C25BF800127B3F /* Settings */ = {
-			isa = PBXGroup;
-			children = (
-				AAA0D8D626C25C2900127B3F /* NetworkConnection.swift */,
-			);
-			path = Settings;
 			sourceTree = "<group>";
 		};
 		AAA0D8D826C2793A00127B3F /* Models */ = {
@@ -338,7 +327,6 @@
 				C7927555262C562B00EF5D3A /* AppDelegate.swift in Sources */,
 				AA6098E626C98FB6006C8D40 /* StreamData.swift in Sources */,
 				AAA0D8E626C2ED2800127B3F /* ChatRoomViewModel.swift in Sources */,
-				AAA0D8D726C25C2900127B3F /* NetworkConnection.swift in Sources */,
 				AAA0D8D426C25A0100127B3F /* ChatRoomSocket.swift in Sources */,
 				AAA0D8E026C2976700127B3F /* User.swift in Sources */,
 				AAA0D8F526C3B9FE00127B3F /* MessageInputBarView.swift in Sources */,

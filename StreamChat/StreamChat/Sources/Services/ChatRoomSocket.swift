@@ -13,8 +13,8 @@ final class ChatRoomSocket: NSObject {
 
         // MARK: TCP Connection information
 
-        static let host = NetworkConnection.host
-        static let port = NetworkConnection.port
+        static let host = "15.165.55.224"
+        static let port = 5080
         static let maxReadLength = 2400
     }
 

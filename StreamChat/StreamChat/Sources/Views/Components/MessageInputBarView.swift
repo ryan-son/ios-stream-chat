@@ -69,7 +69,7 @@ final class MessageInputBarView: UIView {
         return textView
     }()
 
-    private let sendButton: UIButton = {
+    let sendButton: UIButton = {
         let button = UIButton()
         button.frame.size = Style.SendButton.frameSize
         button.setImage(Style.SendButton.image, for: .normal)
@@ -80,6 +80,7 @@ final class MessageInputBarView: UIView {
         button.layer.cornerRadius = button.frame.height / 2
         button.addTarget(self, action: #selector(sendButtonTapped), for: .touchUpInside)
         button.setContentHuggingPriority(.required, for: .horizontal)
+        button.isHidden = true
         return button
     }()
 
