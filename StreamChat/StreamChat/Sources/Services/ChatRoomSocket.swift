@@ -59,6 +59,8 @@ final class ChatRoomSocket: NSObject {
         write(leavingStreamData)
     }
 
+    // MARK: Private Methods
+
     private func connect() {
         Stream.getStreamsToHost(withName: ConnectionSetting.host,
                                 port: ConnectionSetting.port,
@@ -73,8 +75,6 @@ final class ChatRoomSocket: NSObject {
         inputStream?.close()
         outputStream?.close()
     }
-
-    // MARK: Private Methods
 
     private func scheduleStreamsToRunLoop() {
         inputStream?.schedule(in: .current, forMode: .common)
@@ -128,7 +128,7 @@ extension ChatRoomSocket: StreamDelegate {
         while stream.hasBytesAvailable {
             guard let bytesRead = inputStream?.read(buffer, maxLength: ConnectionSetting.maxReadLength) else { return }
 
-            if let error = stream.streamError, bytesRead < 0 {
+            if let error = stream.streamError, bytesRead < .zero {
                 Log.network.error("\(StreamChatError.streamDataReadingFailed(error: error).localizedDescription)")
                 break
             }
