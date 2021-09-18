@@ -74,7 +74,6 @@ final class ChatRoomViewController: UIViewController {
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        chatRoomViewModel?.leaveChat()
         removeKeyboardNotificationObservers()
     }
 

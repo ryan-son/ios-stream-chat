@@ -7,7 +7,14 @@
 
 import Foundation
 
-final class ChatRoomSocket: NSObject {
+protocol ChatRoomSocketProvidable: AnyObject {
+
+    var delegate: ChatRoomSocketDelegate? { get set }
+    func join(with username: String)
+    func send(message: String)
+}
+
+final class ChatRoomSocket: NSObject, ChatRoomSocketProvidable {
 
     private enum ConnectionSetting {
 
@@ -31,6 +38,7 @@ final class ChatRoomSocket: NSObject {
     }
 
     deinit {
+        leave()
         disconnect()
     }
 
@@ -51,15 +59,15 @@ final class ChatRoomSocket: NSObject {
         write(sendingStreamData)
     }
 
-    func leave() {
+    // MARK: Private Methods
+
+    private func leave() {
         guard let leavingStreamData: Data = StreamData.make(.leave) else {
             Log.logic.error("\(StreamChatError.failedToConvertStringToStreamData(location: #function).localizedDescription)")
             return
         }
         write(leavingStreamData)
     }
-
-    // MARK: Private Methods
 
     private func connect() {
         Stream.getStreamsToHost(withName: ConnectionSetting.host,

@@ -15,14 +15,14 @@ final class ChatRoomViewModel {
 
     // MARK: Properties
 
-    private let chatRoomSocket: ChatRoomSocket
+    private let chatRoomSocket: ChatRoomSocketProvidable
     private(set) var messages: [Message] = [] {
         didSet { changed?() }
     }
 
     // MARK: Initializers
 
-    init(chatRoomSocket: ChatRoomSocket) {
+    init(chatRoomSocket: ChatRoomSocketProvidable = ChatRoomSocket()) {
         self.chatRoomSocket = chatRoomSocket
         self.chatRoomSocket.delegate = self
     }
@@ -47,10 +47,6 @@ final class ChatRoomViewModel {
 
     func joinChat(with username: String) {
         chatRoomSocket.join(with: username)
-    }
-
-    func leaveChat() {
-        chatRoomSocket.leave()
     }
 }
 
