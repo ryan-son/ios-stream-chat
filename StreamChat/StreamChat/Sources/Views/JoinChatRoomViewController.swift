@@ -19,7 +19,7 @@ final class JoinChatRoomViewController: UIViewController {
 
         enum ContentStackView {
             static let spacingAtPortraitOrientation: CGFloat = 80
-            static let spacingAtLandscapeOrientation: CGFloat = 30
+            static let spacingAtLandscapeOrientation: CGFloat = 20
         }
 
         enum WelcomeLabel {
@@ -27,11 +27,20 @@ final class JoinChatRoomViewController: UIViewController {
             static let font: UIFont.TextStyle = .largeTitle
         }
 
+        enum UsernameContentStackView {
+            static let spacing: CGFloat = 5
+        }
+
         enum UsernameTextField {
             static let placeholderText: String = "Please enter your name..."
             static let borderWidth: CGFloat = 1
             static let font: UIFont.TextStyle = .title3
             static let backgroundColor: UIColor = .systemGray6
+        }
+
+        enum UsernameTextCountLabel {
+            static let maxLength: Int = 10
+            static let initialText: String = "0/\(Style.UsernameTextCountLabel.maxLength)"
         }
 
         enum JoinButton {
@@ -49,6 +58,11 @@ final class JoinChatRoomViewController: UIViewController {
         enum Alert {
             static let UsernameRequiredTitle: String = "이름을 입력해주세요"
             static let okActionTitle: String = "확인"
+            static let maxLengthExceededTitle: String = "최대 글자수 초과"
+            static let maxLengthExceededMessage: String = "10 자를 초과할 수 없어요."
+            static let timeToDismissMaxLengthExceededAlert: TimeInterval = 0.3
+            static let forbiddenStringContainedTitle: String = "제한된 문자 포함"
+            static let forbiddenStringContainedMessage: String = "입력할 수 없는 문자열이 포함되어 있습니다."
         }
     }
 
@@ -78,6 +92,15 @@ final class JoinChatRoomViewController: UIViewController {
         return label
     }()
 
+    private let usernameContentStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.distribution = .equalSpacing
+        stackView.spacing = Style.UsernameContentStackView.spacing
+        return stackView
+    }()
+
     private let usernameTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = Style.UsernameTextField.placeholderText
@@ -87,6 +110,15 @@ final class JoinChatRoomViewController: UIViewController {
         textField.borderStyle = .roundedRect
         textField.autocorrectionType = .no
         return textField
+    }()
+
+    private let usernameTextCountLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.preferredFont(forTextStyle: .callout)
+        label.textColor = .systemGray2
+        label.textAlignment = .left
+        label.text = Style.UsernameTextCountLabel.initialText
+        return label
     }()
 
     private let joinButton: UIButton = {
@@ -139,8 +171,10 @@ final class JoinChatRoomViewController: UIViewController {
     }
 
     private func setUpSubviews() {
+        usernameContentStackView.addArrangedSubview(usernameTextField)
+        usernameContentStackView.addArrangedSubview(usernameTextCountLabel)
         contentStackView.addArrangedSubview(welcomeLabel)
-        contentStackView.addArrangedSubview(usernameTextField)
+        contentStackView.addArrangedSubview(usernameContentStackView)
         contentStackView.addArrangedSubview(joinButton)
         view.addSubview(contentStackView)
     }
@@ -182,6 +216,7 @@ final class JoinChatRoomViewController: UIViewController {
         guard let userInfo = notification.userInfo,
               let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else { return }
         centerYConstraint?.constant = .zero
+
         UIView.animate(withDuration: duration) { [weak self] in
             self?.view.layoutIfNeeded()
         }
@@ -231,6 +266,10 @@ final class JoinChatRoomViewController: UIViewController {
             showUsernameRequiredAlert()
             return
         }
+        guard !username.contains(StreamData.Infix.receive) else {
+            showForbiddenStringContainedAlert()
+            return
+        }
         chatRoomViewController.join(with: username)
         navigationController?.pushViewController(chatRoomViewController, animated: true)
     }
@@ -247,6 +286,27 @@ final class JoinChatRoomViewController: UIViewController {
         usernameRequiredAlert.addAction(okAction)
         present(usernameRequiredAlert, animated: true)
     }
+
+    private func showMaxLengthExceededAlert() {
+        let alert = UIAlertController(title: Style.Alert.maxLengthExceededTitle,
+                                      message: Style.Alert.maxLengthExceededMessage,
+                                      preferredStyle: .alert)
+        present(alert, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Style.Alert.timeToDismissMaxLengthExceededAlert) {
+            alert.dismiss(animated: true)
+        }
+    }
+
+    private func showForbiddenStringContainedAlert() {
+        let forbiddenStringContainedAlert = UIAlertController(title: Style.Alert.forbiddenStringContainedTitle,
+                                                              message: Style.Alert.forbiddenStringContainedMessage,
+                                                              preferredStyle: .alert)
+        let okAction = UIAlertAction(title: Style.Alert.okActionTitle, style: .default) { [self] _ in
+            usernameTextField.becomeFirstResponder()
+        }
+        forbiddenStringContainedAlert.addAction(okAction)
+        present(forbiddenStringContainedAlert, animated: true)
+    }
 }
 
 // MARK: - UITextFieldDelegate
@@ -260,8 +320,24 @@ extension JoinChatRoomViewController: UITextFieldDelegate {
             showUsernameRequiredAlert()
             return false
         }
+        guard !username.contains(StreamData.Infix.receive) else {
+            showForbiddenStringContainedAlert()
+            return false
+        }
         chatRoomViewController.join(with: username)
         navigationController?.pushViewController(chatRoomViewController, animated: true)
         return true
+    }
+
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let text = textField.text else { return true }
+        let length = text.count + string.count - range.length
+        let isWithinMaxLength = length <= Style.UsernameTextCountLabel.maxLength
+        if isWithinMaxLength {
+            usernameTextCountLabel.text = "\(length)/\(Style.UsernameTextCountLabel.maxLength)"
+        } else {
+            showMaxLengthExceededAlert()
+        }
+        return isWithinMaxLength
     }
 }
