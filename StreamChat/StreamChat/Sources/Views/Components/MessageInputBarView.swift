@@ -86,6 +86,7 @@ final class MessageInputBarView: UIView {
         textView.layer.cornerRadius = Style.InputTextView.cornerRadius
         textView.isScrollEnabled = false
         textView.autocorrectionType = .no
+        textView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         textView.setContentCompressionResistancePriority(.required, for: .vertical)
         textView.translatesAutoresizingMaskIntoConstraints = false
         return textView
