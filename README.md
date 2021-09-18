@@ -11,7 +11,8 @@ Socket 통신을 통해 참여자 간 실시간 채팅기능을 제공하는 앱
   + [적용된 기술 스택 일람](#적용된-기술-스택-일람)
 - [2. 기능](#2-기능)
 - [3. 설계 및 구현](#3-설계-및-구현)
-- [4. Trouble shooting](#4-trouble-shooting)
+- [4. 구현 완료 후 개선한 기능 및 수정한 버그](#4-구현-완료-후-개선한-기능-및-수정한-버그)
+- [5. Trouble shooting](#5-trouble-shooting)
 
 ---
 
@@ -63,8 +64,6 @@ Socket 통신을 통해 참여자 간 실시간 채팅기능을 제공하는 앱
 
 사용자의 입퇴장을 화면에 보여줍니다.
 
-
-
 <img src="https://user-images.githubusercontent.com/69730931/133870328-a0cafec7-c127-49de-b960-0573ee07185d.gif" alt="stream-chat-scenario-4" width="780"/>
 
 
@@ -78,6 +77,11 @@ Socket 통신을 통해 참여자 간 실시간 채팅기능을 제공하는 앱
 <img src="https://user-images.githubusercontent.com/69730931/133870091-50f1fe24-b2a2-4675-ac05-14bc4df9d168.gif" alt="stream-chat-scenario-4" width="780"/>
 
 
+## 사용자 이름 설정 및 채팅방 입퇴장
+
+사용자가 원하는 이름을 지정하여 채팅방에 입장할 수 있으며, 퇴장 시 퇴장 메시지를 띄우도록 메시지를 전달합니다. 
+
+<img src="https://user-images.githubusercontent.com/69730931/133871793-f7d106f3-52e6-42a4-a579-414e2a97ede4.gif" alt="stream-chat-scenario-5" width="780"/>
 
 
 
@@ -90,6 +94,9 @@ Socket 통신을 통해 참여자 간 실시간 채팅기능을 제공하는 앱
 
 
 # 3. 설계 및 구현
+
+![image](https://user-images.githubusercontent.com/69730931/133871752-8880a458-a873-4237-8bef-dcec4eb605ca.png)
+
 
 ## 메시지 송신
 
@@ -109,6 +116,7 @@ Socket 통신을 통해 참여자 간 실시간 채팅기능을 제공하는 앱
 
 ## 메시지 입력창 탭에 따른 메시지 입력창 위치 이동
 
+## 사용자 이름 설정 및 채팅방 입장
 
 
 ## 에러 및 실행 상황 로깅
@@ -119,6 +127,10 @@ Socket 통신을 통해 참여자 간 실시간 채팅기능을 제공하는 앱
 
 
 
+# 4. 구현 완료 후 개선한 기능 및 수정한 버그
 
+## 메시지 입력창 최대 높이 제한 및 스크롤링 기능 추가
 
-# 4. Trouble shooting
+## 메시지 입력 시 최대 글자수 제한, 작성 중인 글자수 표시 및 제한 초과 알림
+
+# 5. Trouble shooting
