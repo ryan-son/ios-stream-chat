@@ -28,7 +28,8 @@ Socket 통신을 통해 참여자 간 실시간 채팅기능을 제공하는 앱
 
 ## 프로젝트 관리
 
-구현 사항을 단계별로 정의 후 필요 기능을 이슈로 남기고 GitHub Project로 관리함으로써 체계적으로 요구기능명세에 따른 개발을 할 수 있도록 목표를 잡았습니다 ([구현 Project](https://github.com/ryan-son/ios-stream-chat/projects/1), [issue board](https://github.com/ryan-son/ios-stream-chat/issues?q=is%3Aissue+is%3Aclosed)).
+- 구현 사항을 단계별로 정의 후 필요 기능을 이슈로 남기고 GitHub Project로 관리함으로써 체계적으로 요구기능명세에 따른 개발을 할 수 있도록 목표를 잡았습니다 ([구현 Project](https://github.com/ryan-son/ios-stream-chat/projects/1), [issue board](https://github.com/ryan-son/ios-stream-chat/issues?q=is%3Aissue+is%3Aclosed)).
+- 개선 프로젝트와 issue를 통해 필요하다 판단한 사용자 편의 기능과 수정해야할 버그를 정리하여 업데이트하고 있습니다 ([개선 프로젝트](https://github.com/ryan-son/ios-stream-chat/projects/2), [on-going issue board](https://github.com/ryan-son/ios-stream-chat/issues), [closed issue board](https://github.com/ryan-son/ios-stream-chat/issues?q=is%3Aissue+is%3Aclosed)) 
 
 ## MVVM
 
@@ -50,13 +51,13 @@ Socket 통신을 통해 참여자 간 실시간 채팅기능을 제공하는 앱
 
 # 2. 기능
 
-## 메시지 송신
+## [메시지 송신 (구현 방식 바로가기)](#메시지-송신-기능으로-돌아가기)
 
 채팅에 참가 중인 사용자들에게 실시간으로 메시지를 보낼 수 있습니다.
 
 <img src="https://user-images.githubusercontent.com/69730931/133869662-eb3932aa-6464-4615-8cf9-a4675442b9ae.gif" alt="stream-chat-send" width="780"/>
 
-## 메시지 수신
+## [메시지 수신 (구현 방식 바로가기)](#메시지-수신-기능으로-돌아가기)
 
 채팅에 참가 중인 사용자의 메시지를 받아 실시간으로 보여줍니다.
 
@@ -64,7 +65,7 @@ Socket 통신을 통해 참여자 간 실시간 채팅기능을 제공하는 앱
 
  
 
-## 사용자 입퇴장 알림
+## [사용자 입퇴장 알림 (구현 방식 바로가기)](#사용자-입퇴장-알림-기능으로-돌아가기)
 
 사용자의 입퇴장을 화면에 보여줍니다.
 
@@ -74,14 +75,16 @@ Socket 통신을 통해 참여자 간 실시간 채팅기능을 제공하는 앱
 
 
 
-## 메시지 입력창 탭에 따른 채팅창 위치 이동
+## [메시지 입력창 탭에 따른 메시지 입력창 및 채팅창 위치 이동 (구현 방식 바로가기)](#메시지-입력창-탭에-따른-메시지-입력창-및-채팅창-위치-이동-기능으로-돌아가기)
+
+
 
 메시지 입력을 위해 입력창을 탭하면 최근 대화 위치로 이동하여 마지막으로 이루어진 대화를 보여줍니다.
 
 <img src="https://user-images.githubusercontent.com/69730931/133870091-50f1fe24-b2a2-4675-ac05-14bc4df9d168.gif" alt="stream-chat-scenario-4" width="780"/>
 
 
-## 사용자 이름 설정 및 채팅방 입퇴장
+## [사용자 이름 설정 및 채팅방 입퇴장 (구현 방식 바로가기)](#사용자-이름-설정-및-채팅방-입퇴장-기능으로-돌아가기)
 
 사용자가 원하는 이름을 지정하여 채팅방에 입장할 수 있으며, 퇴장 시 퇴장 메시지를 띄우도록 메시지를 전달합니다. 
 
@@ -89,7 +92,7 @@ Socket 통신을 통해 참여자 간 실시간 채팅기능을 제공하는 앱
 
 
 
-## 에러 및 실행 상황 로깅
+## [에러 및 실행 상황 로깅 (구현 방식 바로가기)](#에러-및-실행-상황-로깅-기능으로-돌아가기)
 
 통합 로깅 시스템을 통해 앱의 실행 상황과 발생한 에러를 감시하여 보여주고, console app에 기록합니다.
 
@@ -105,7 +108,7 @@ Socket 통신을 통해 참여자 간 실시간 채팅기능을 제공하는 앱
 
 
 
-## 메시지 송신
+## [메시지 송신 (기능으로 돌아가기)](#메시지-송신-구현-방식-바로가기)
 
 `ChatRoomViewController`의 요소 중 하나인 `MessageInputBarView`의 textView를 통해 보낼 메시지를 입력한 후 textView 우측에 위치한 보내기 버튼을 탭하면 target으로 등록된 메서드가 실행되며 `MessageInputBarViewDelegate` 타입인 `delegate의 `didTapSendButton(message:)` 메서드를 통해 보낼 메시지를 전달합니다.
 
@@ -172,7 +175,7 @@ private func write(_ streamData: Data) {
 
 
 
-## 메시지 수신
+## [메시지 수신 (기능으로 돌아가기)](#메시지-수신-구현-방식-바로가기)
 
 `ChatRoomSocket`이 `StreamDelegate`의 `stream(_:handle:)`을 구현함으로써 `InputStream`에 전달된 메시지를 읽어옵니다.
 
@@ -243,7 +246,7 @@ private func constructMessage(with buffer: UnsafeMutablePointer<UInt8>, length: 
 
 
 
-## 사용자 입퇴장 알림
+## [사용자 입퇴장 알림 (기능으로 돌아가기)](#사용자-입퇴장-알림-구현-방식-바로가기)
 
 사용자 입퇴장 역시 [메시지 수신](#메시지-수신)과 마찬가지로 `InputStream`에 읽어올 수 있는 바이트가 있을 경우에 실행되지만, 시스템 메시지의 특성을 이용하여 시스템이 보낸 메시지인지 여부를 판단합니다. 메시지는 보통 구분자인 `USR_NAME::{ID}::END`, `MSG::{message}::END`와 같이 `::`로 구분되는데, 시스템 메시지는 이러한 구분자를 사용하지 않습니다. 결과적으로 시스템 메시지를 읽어와 구분자로 구분했을 때 요소는 1개라고 판단할 수 있습니다.
 
@@ -306,7 +309,7 @@ func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> U
 
 
 
-## 메시지 입력창 탭에 따른 메시지 입력창 및 채팅창 위치 이동
+## [메시지 입력창 탭에 따른 메시지 입력창 및 채팅창 위치 이동 (기능으로 돌아가기)](#메시지-입력창-탭에-따른-메시지-입력창-및-채팅창-위치-이동-구현-방식-바로가기)
 
 사용자가 메시지를 입력하기 위해 `MessageInputBarView`의 textView를 탭하면 해당 textView가 firstResponder가 되어 `NotificationCenter`로부터 `keyboardWillShow` 알림을 받을 수 있습니다. 이를 통해 아래와 같이 키보드의 레이아웃에 따라 View의 레이아웃을 조정하는 메서드를 구성할 수 있으며, 여기에 마지막 메시지로 이동할 수 있는 기능을 추가하여 키보드 등장 시 마지막 메시지로 이동할 수 있는 기능을 구현하였습니다.
 
@@ -327,7 +330,7 @@ func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> U
 
 
 
-## 사용자 이름 설정 및 채팅방 입장
+## [사용자 이름 설정 및 채팅방 입퇴장 (기능으로 돌아가기)](#사용자-이름-설정-및-채팅방-입퇴장-구현-방식-바로가기)
 
 초기 화면인 `JoinChatRoomViewController`에서 textField를 통해 사용자 이름을 입력 받아 사용합니다.
 
@@ -366,7 +369,7 @@ func join(with username: String) {
 
 
 
-## 에러 및 실행 상황 로깅
+## [에러 및 실행 상황 로깅 (기능으로 돌아가기)](#에러-및-실행-상황-로깅-구현-방식-바로가기)
 
 애플의 통합 로깅 시스템 (Unified Logging System)인 OSLog를 이용해 발생한 에러 또는 실행이 정상적으로 이루어지는지 여부를 기록합니다. 기록된 내용은 xcode의 콘솔 또는 mac OS의 콘솔 앱을 통해서 확인할 수 있습니다. 
 
@@ -553,4 +556,3 @@ override func viewDidLayoutSubviews() {
     messagesTableView.contentInset.top = Style.MessagesTableView.topContentInset
 }
 ```
-
