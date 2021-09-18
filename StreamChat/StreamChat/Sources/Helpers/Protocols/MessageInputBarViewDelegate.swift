@@ -8,4 +8,5 @@
 protocol MessageInputBarViewDelegate: AnyObject {
 
     func didTapSendButton(message: String)
+    func showMaxBodyLengthExceededAlert()
 }

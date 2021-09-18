@@ -141,7 +141,7 @@ final class ChatRoomViewController: UIViewController {
 
         guard let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else { return }
         UIView.animate(withDuration: duration) {
-            self.messagesInputBarView.sendButton.isHidden = false
+            self.messagesInputBarView.rightComponentStackView.isHidden = false
             self.view.layoutIfNeeded()
             self.scrollToLastMessage()
         }
@@ -156,7 +156,7 @@ final class ChatRoomViewController: UIViewController {
         guard let userInfo = notification.userInfo,
               let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else { return }
         UIView.animate(withDuration: duration) {
-            self.messagesInputBarView.sendButton.isHidden = true
+            self.messagesInputBarView.rightComponentStackView.isHidden = true
             self.view.layoutIfNeeded()
         }
     }
@@ -249,5 +249,15 @@ extension ChatRoomViewController: MessageInputBarViewDelegate {
 
     func didTapSendButton(message: String) {
         chatRoomViewModel?.send(message: message)
+    }
+
+    func showMaxBodyLengthExceededAlert() {
+        let alert = UIAlertController(title: "최대 글자수 초과",
+                                      message: "300자를 초과할 수 없어요.",
+                                      preferredStyle: .alert)
+        present(alert, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+            alert.dismiss(animated: true)
+        }
     }
 }
