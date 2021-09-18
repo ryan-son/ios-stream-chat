@@ -196,7 +196,7 @@ extension MessageInputBarView: UITextViewDelegate {
     }
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        let isWithinMaxLength: Bool = textView.text.count + (text.count - range.length) <= Style.InputTextCountLabel.maxCount + 1
+        let isWithinMaxLength: Bool = textView.text.count + (text.count - range.length) <= Style.InputTextCountLabel.maxCount
 
         if !isWithinMaxLength {
             delegate?.showMaxLengthExceededAlert()

@@ -32,10 +32,6 @@ final class ChatRoomViewController: UIViewController {
             static let forbiddenStringContainedMessage: String = "입력할 수 없는 문자열이 포함되어 있습니다."
             static let okActionTitle: String = "확인"
         }
-
-        enum Constraint {
-            static let contentStackViewBottomWhenKeyboardShown: CGFloat = 27
-        }
     }
 
     // MARK: Properties
