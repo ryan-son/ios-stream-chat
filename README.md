@@ -29,7 +29,8 @@ Socket 통신을 통해 참여자 간 실시간 채팅기능을 제공하는 앱
 ## 프로젝트 관리
 
 - 구현 사항을 단계별로 정의 후 필요 기능을 이슈로 남기고 GitHub Project로 관리함으로써 체계적으로 요구기능명세에 따른 개발을 할 수 있도록 목표를 잡았습니다 ([구현 Project](https://github.com/ryan-son/ios-stream-chat/projects/1), [issue board](https://github.com/ryan-son/ios-stream-chat/issues?q=is%3Aissue+is%3Aclosed)).
-- 개선 프로젝트와 issue를 통해 필요하다 판단한 사용자 편의 기능과 수정해야할 버그를 정리하여 업데이트하고 있습니다 ([개선 프로젝트](https://github.com/ryan-son/ios-stream-chat/projects/2), [on-going issue board](https://github.com/ryan-son/ios-stream-chat/issues), [closed issue board](https://github.com/ryan-son/ios-stream-chat/issues?q=is%3Aissue+is%3Aclosed)) 
+- 개선 프로젝트와 issue를 통해 필요하다 판단한 사용자 편의 기능과 수정해야할 버그를 정리하여 업데이트하고 있습니다 ([개선 프로젝트](https://github.com/ryan-son/ios-stream-chat/projects/2), [on-going issue board](https://github.com/ryan-son/ios-stream-chat/issues), [closed issue board](https://github.com/ryan-son/ios-stream-chat/issues?q=is%3Aissue+is%3Aclosed))
+- 구현 완료 후 지속적으로 개선 중인 내용은 [여기](#4-구현-완료-후-개선한-기능-및-수정한-버그)를 통해 확인하실 수 있습니다.
 
 ## MVVM
 
